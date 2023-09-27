@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Jan Meis" />
+
+<meta name="date" content="2023-09-26" />
+
+<title>Introduction to adestr</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to adestr</h1>
+<h4 class="author">Jan Meis</h4>
+<h4 class="date">2023-09-26</h4>
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This package implements methods to evaluate the performance
+characteristics of various point and interval estimators for adaptive
+two-stage designs with prespecified sample-size recalculation rules.
+Further, it allows for evaluation of these estimators on real datasets,
+and it implements methods to calculate p-values.</p>
+<p>Currently, it works for designs objects which were produced by the
+R-package <code>adoptr</code>, which calculates optimal design
+parameters for adaptive two-stage designs. You can learn about adoptr
+here: <a href="https://kkmann.github.io/adoptr/">kkmann.github.io/adoptr/</a>.</p>
+</div>
+<div id="fitting-a-design-with-adoptr" class="section level1">
+<h1>Fitting a design with adoptr</h1>
+<p>In order to showcase the capabilities of this package, we need a
+trial design first. We refer to <a href="https://kkmann.github.io/adoptr/articles/adoptr.html">the example
+from the adoptr documentation</a> for this. You can read more about
+optimal adaptive designs fitted via the adoptr package here: <a href="https://kkmann.github.io/adoptr/articles/adoptr_jss.html">kkmann.github.io/adoptr/articles/adoptr_jss.html</a>.</p>
+<p>For the sake of this introduction, a pre-computed version of the
+first example from <a href="https://kkmann.github.io/adoptr/articles/adoptr.html">kkmann.github.io/adoptr/articles/adoptr.html</a>
+is provided with this package via the <code>get_example_design</code>
+function.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(adestr)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">get_example_design</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; TwoStageDesign&lt;n1=56;0.8&lt;=x1&lt;=2.3:n2=18-80&gt;</span></span></code></pre></div>
+</div>
+<div id="example" class="section level1">
+<h1>Example</h1>
+<div id="evaluating-the-mean-squared-of-an-estimator" class="section level2">
+<h2>Evaluating the mean squared of an estimator</h2>
+<p>Now that we have created an optimal adaptive design, we can
+investigate the performance characteristics of various estimators for
+the mean in that design. To this end, the
+<code>evaluate_estimator</code> function can be used.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">evaluate_estimator</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a> <span class="at">score =</span> <span class="fu">MSE</span>(),</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a> <span class="at">estimator =</span> <span class="fu">SampleMean</span>(),</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a> <span class="at">data_distribution =</span> <span class="fu">Normal</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a> <span class="at">design =</span> <span class="fu">get_example_design</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a> <span class="at">mu =</span> <span class="fl">0.3</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a> <span class="at">sigma =</span> <span class="dv">1</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; Design:                              TwoStageDesign&lt;n1=56;0.8&lt;=x1&lt;=2.3:n2=18-80&gt;</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; Data Distribution:                                             Normal&lt;two-armed&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; Estimator:                                                           Sample mean</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; Assumed sigma:                                                                 1</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; Assumed mu:                                                                  0.3</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; Results:</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt;  Expectation:                                                          0.3056727</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;  Bias:                                                               0.005672677</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;  Variance:                                                            0.03777784</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;  MSE:                                                                 0.03781002</span></span></code></pre></div>
+<p>The mean squared error of the sample mean depends on the true
+underlying value of the paramter <span class="math inline">\(\mu\)</span>, which of course is unknown.
+Therefore, it may be advisable to use the
+<code>evaluate_estimator</code> function on an array of values for <span class="math inline">\(\mu\)</span> to investigate the distributional
+properties of an estimator.</p>
+<p>In the following, the MSE of the sample mean vs. a weighted sample
+mean with fixed weights will be plotted.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>mse_mle <span class="ot">&lt;-</span> <span class="fu">evaluate_estimator</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">score =</span> <span class="fu">MSE</span>(),</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="fu">SampleMean</span>(),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">data_distribution =</span> <span class="fu">Normal</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">design =</span> <span class="fu">get_example_design</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">mu =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.75</span>, <span class="fl">1.32</span>, .<span class="dv">03</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">sigma =</span> <span class="dv">1</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>mse_weighted_sample_means <span class="ot">&lt;-</span> <span class="fu">evaluate_estimator</span>(</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="at">score =</span> <span class="fu">MSE</span>(),</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="fu">WeightedSampleMean</span>(<span class="at">w1 =</span> .<span class="dv">8</span>),</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">data_distribution =</span> <span class="fu">Normal</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">design =</span> <span class="fu">get_example_design</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">mu =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.75</span>, <span class="fl">1.32</span>, .<span class="dv">03</span>),</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="at">sigma =</span> <span class="dv">1</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>)</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(mse_mle, mse_weighted_sample_means))</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAB9VBMVEUAAAAAADoAAGYAOmYAOpAAZpAAZrYAv8QZSJcaGhozMzM6AAA6ADo6AGY6OgA6OmY6OpA6ZpA6ZrY6kLY6kNtIGRlIGXFNTU1NTVBNTVZNTWRNTW5NTY5NTk1NUG9NUmtNU39NZKJNaX9NbqtNjshOTVVQTU1RTWRSTU1STVBTTWRTU39Tb3tTf7lVh/9ZTU5ZTVJcTU1dTU1dTVNepf9kTU1kTV5kTWRkh4NmAABmADpmAGZmOgBmOjpmOpBmZgBmZjpmZmZmZrZmkJBmtv9nueRpTWtryP9uTU1uTW5uTY5uaX9ubqtuq+RvTW9vUE1xuv955OR7b1N/U01/zciH5KuOTU2OTW6OTW+OTY6ObquOyP+QOgCQOjqQOmaQZgCQZpCQkDqQkGaQtpCQzauQ27aQ2/+X3bqX3f+i5Kui/8ii//+raU2rbk2rbm6rbo6rjk2ruX+ryKur5JSr5P+1q122ZgC2Zjq2kJC2tma225C22/+2/7a2/9u2//+5f1O6cRm6///Ijk3I/+TI///NyI7N5KvN///bkDrbkGbbtrbb/7bb/9vb///kq13kq27kuWfk///y8vL4dm3/lFn/omT/tmb/yHv/yI7/zW//zX//25D/27b/29v/5Kv//5T//6L//7b//8j//83//9v//+T///8K7V81AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAL90lEQVR4nO2djX/bRhnHlbZ4LGnYCAYDHbDR8Tre30aWFbYhoC3jHTagydhaCC9jGy/FhTICmALhJZQxMKGGUGeu/k7uTifpzrrT47s4sXX6fT+fOo4kO9K3dyfpee50UQIqiWa9A/MOBBFAEAEEEUAQAQQRQBABBBFAEAEEEUAQAQQRQBABBBFAEAEEEUAQASno1S7f9h3/HZlXSEHfdfm2l/vvyLyCKkZACvr1UezFHEMK+sJR7MUcQwr6jcu3vcZ/R+YVUtDtLt/m1KLXAzTSBBBEAEEEXND+Y53TL4jf5LvdTueua7Pdr7mBCbr1zIXk+r38F/lu7/w1uQBwQftfvyacqO+yH4AJ2nv0hWT/8cuJ+k6WoMXFxZnu3RzABO2ezrTk7/bOnro86z2bE2wlSP4AtjYo6V2Y7Y7NC+Is9tn8LCbeFXWO8aLLt902/R2cNcV1EC868jroeqeTt0EQRABBBBBEAEEEEEQAQQQQZAh37J3tdLLrRAgqhzv4ReLeOepCMbvkLvSGKqh0q7HLbWW3GjZBuzKmVuhNQhVUcbO6uLhoEdQ79eO0BKn3b4EKMoQ7xF1ZClXFCqnMZpiCDCVo/7HMDylIu7MNU1A53LF3toh1TF6CklAFlcIdqh9SUAPaoFK443qHQ5zFMiuF3iRYQZVUClJiSAIIIoAgAggigCACCCIIVFAp3KGm5iGoHO4obtUTx2MOU1D5ViO/VU8gyBLukFXM9QY9TEGmcMceSpCkugQlEGTp3UEKKs58/Nb2rqDv5kvhjoQWpESi1X4yYQoq9+6gBRVl7dazSk+rQAVVYj7morViTmXsKNiYdDXmY1bOd+cuF6UIgjK0SHTRDkFQhhaJhqAyxfmOV7ZbzwV9mq+m8jpIDFpQOjQGKqgU7vCOw4cpqBTu8O+PEKag0q2Gfy4wTEGlm1X//ghhCiqFO/z7I4QpqKIEJRCENojAFO7w748QpqByuAPXQQW+V9JT2LgeQBABBBEc7GZVfwdBBYZ0tX3jWnPggFlzOnEmibF3BxVybUBHcp/eHaZ0tXXjWuPZu8M4viNUQT69OxrVBvn07jClq60b15qoc69X7w5Dutq+cZ0he3egjyLRuwOCiN4dEEQAQQQQRABBBBBEAEEEEIRnd1Ti/+wOE2EK8np2R5M6kvs8u6NRHcl9nt3h1JF8tB4Jjm3li/7zi2RwctO8S2zdHGEOd5DP7nDqSD5ab48tscoh1s0Az2d3OHUkr7sg12d39DpqqUsXVfaTVgQNllhVi/lrm4kYnLwk3rGXWK4Tv7RFrWyxRctPqRVzFng+u8OpI3khSJSOwVLMf3JBSyd2ku2IvxzbGq4ySewnXzdab4l/g6XWdA7TH88raaeO5Fkj3WYlIi0OuSBRcGKx4L876Qq+rs+LDXsR62aL762GS0dypYp1Rc3JBYkClb/0mcSFVBArVPkGs+Uo7sW0Rnq4GqXVaFzQcHUhX9hkQVxRbBIkpPRlCWKuRBVrmiDRtojSEpcF8QK0tCDW5Y10UwSljTQzkDYzvC1qldog1j4tfJvZYevy0/x8CKqcmcVJUIBgZhYCzMxCgJlZCDAzC4GldwdmZsnAzCwE5MwsU+DvZqb2/YcKOTPLFKi9oMMGggggiACCCCCIAIIIIIgAgggoQcPVqDL7leVCZsIcCEoTYjwibaHpgsTxDx/YTNIM62jjYhS1+zyNNlx7igdo+QYiGcK3VlZnC9PPDe78pkjQTpmjEfRimULQaD0tPcLR8laWUWVvh6sndnhugwnqtpPtVrp1vloulJ8bLLXTdNF0IQXdfvC/QTbS/TSSzxiubY02NhP+jx23SHBsbHJVTAJblySJujpfyH9wY4dQGeegiglE/qLLG+sxA0k3FmVJpkM0Qat5jiQ6Vg9B5uJGCOq3+Gs3Fsmy5XFBsgStZUeurpalJ/1cLQSZmeQsxo5XHOHJTa2ItHizIpubtIFRVsuF8nOzEnQEbRCvKrymbEfR8QdjrQQ9pJzF0mZKFSQXpp+rRQnyqmJ2RBs0Y+agitmBoBow3TZoylVsHkAJIoAgAggigCACCCKAIAIIIoAgAggigCCCSO34mw3zUYehOnUDNm9MCOrGPOgaZ5GzRE1jyHd6GGO0HjukitIRQ13rxtvaMAD1Lw2W2J+Ixjv+8t5TvcrxYhV4CeJ7uP1we3xX1f0tCXJIFQ1OvnInGZ6xRYoGd6pf0les81jC9olorOMv71mmDUM9fEFsF0cbl/jLpkzkyAjZ8TObg+WPR1EslsocD1+eRscmTBUNlh9ivz5cpI70LFE35gVSjqDpLlwqRHJ1w7VorOMvf9WGoU5F0G1llJDr2tbwY395QsSd00ROFmNd2JS5HCXxw5dHsUOqaLD88zj54yVLloj/UVZyt5krUYD55/pi4EQsS5De8Td9rw5DPfwSxMPyKzx5sZLIRI6M0qfxehmQl6vE8vXYIVU0WL66Mnriqpo6UrJEvJiwf1cutvjn9crMStyJnUjv+LubP6+NeLDAFAUl2/F2nPTb7H9QJnLkjuuC8lVps55MmioaLP/yyT8/oqaO1CwRzwQM155fu7r8vHCnCEqHPkZ6x99ePhz8CAX1W1dYqV+5kv8HG0tQ/n/PS5BDqoi9u3KxrXyDliUSbXT3EyusFWvJrbMqJtw9EGkdf9OKpQ1DPQJBwzOiuNyxlSiJHNkG5YKyxE/aBjmkingxSb/IlCUS1vpR2golphKkdfzN2mulG/ARCOJNLHPDX9JEjjwFvSwvQaN1cRbj9WO0zs9iDqmi1K+SOtKzRN04U1G6oBDN3HQH1PkJsuGV5XLNhOjXQWXmVRAfcijPUm44p4oMl6cq8ypobphckG3g5q1nqAarGYKsAzfZ9UB+9dRkQbaBm/y30sYBMbEg28DNvUd/KKuY641bPZhYkG3gJn+WDlembRwQBytB45ORNVmQbeDm/jcgSGAduNlTqliYT8GrJj9m28BN9hsxCUet0YL2WbQeE7AVROMXfclB5jMKUZB60SfjrJgEUkEL2stoPSaiVdCC9jJaj4loFaLS0zp6FzARrUJUeloHu/ZDG1SgBe1ltB4T0SroQfvi2g/XQRJMI0oAQQQQRABBBBBEAEEErvEg5Z0MkajPNW2yIFteTHuuaZMFVT3QNPB5VqvJjrnigabFc02bLMj+QFPluaZNFlT1QNPA53quprINKkIk+sYBoWc15MxrphmxbHmx4KdTV0/Z2cxrxhmxbHkxel6NWqNlNeTMaxPMiGUhREHjp2z22wQzYlkIWFB2ruYNzAQzYlkIWFAyPvOa14kpREHaKVuZWQyCUrSshvQzwYxYFkIUpJ6ylSGZfmfuEAVRG0AQAQQRQBABBBE4HXMTe7lCEMEUhkPVGggigCCCgw+oUzsTNVmQLXGodapusqCqAXV54jBEQabqYqo19gF1SqfqEAUZqoux1tgSh1pWI0RBhupirDWNHVBnqC7GWmMdUBd6G2SoLsZaY0scap2qAxakVhdzrakYUBf0dZChuvjXmhAFGaqLf60JUZCpunjXmhAFURtAEAEEEUAQAQQRQBABBBFAEAEEEUAQAQQRQBCoBIIIIIiAFLTo8m1OG9cDCCKAIAIIIkAjTQBBBBBEAEEEEERgFXTzw51Omh37qxjikj+f48Ab1wuboJe+/NHOa+/h+dWXPv+e3pfuqfwSp41rhk3QzQ+8/nMfedv3zl9L/ve+Lz77o3c+XfUlThvXDJugG/f9/jOf+uBXHr+c/PutchSZHaeNa4ZN0D/v/t2b02P+x+u+de4n7/2kOlT8QBvXDLOgXqfzxqxQ3LjvD8nN93+oZy0VThvXDmsbdP/3v5Y2Kzfvfzq58fZPVx2z08Y1w34We/cP3iFOTP96w7tO/+pNv32u4szttHHNIK6D/vaWr57/KW92T1W2Kk4b1wtcSRNAEAEEEUAQAQQRQBCBj6DRelvMiNoIIIgAggggiACCCPwEtXb+9OCrfuYx0XD98BK08Yrjm/1oZeo7M494CXqyev7ooPARJGe2bwY+ggZ3QBDIgCACCCKAIAIIIoAgAggigCACCCKAIIL/A/s8Oi0c9kzlAAAAAElFTkSuQmCC" /><!-- --></p>
+</div>
+<div id="analyzing-datasets" class="section level2">
+<h2>Analyzing datasets</h2>
+<p>Next, let us look at how to the package can be used to calculate
+estimates after data has been collected.</p>
+<p>The first stage data of a trial might look like this:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">321</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a> <span class="at">endpoint =</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="dv">56</span>, .<span class="dv">3</span>, <span class="dv">1</span>), <span class="fu">rnorm</span>(<span class="dv">56</span>, <span class="dv">0</span>, <span class="dv">1</span>)),</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a> <span class="at">group =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;trt&quot;</span>, <span class="st">&quot;ctl&quot;</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="dv">56</span>,<span class="dv">56</span>)), <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;trt&quot;</span>, <span class="st">&quot;ctl&quot;</span>)),</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a> <span class="at">stage =</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">112</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="fu">head</span>(dat)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;      endpoint group stage</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; 1  2.00490322   trt     1</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; 2 -0.41203856   trt     1</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 3  0.02201509   trt     1</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 4  0.18035098   trt     1</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 5  0.17603938   trt     1</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 6  0.56818377   trt     1</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">analyze</span>(<span class="at">data =</span> dat,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>        <span class="at">statistics =</span> <span class="fu">list</span>(),</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>        <span class="at">data_distribution =</span> <span class="fu">Normal</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>        <span class="at">design =</span> <span class="fu">get_example_design</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>        <span class="at">sigma =</span> <span class="dv">1</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; Design:                              TwoStageDesign&lt;n1=56;0.8&lt;=x1&lt;=2.3:n2=18-80&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; Data Distribution:                                             Normal&lt;two-armed&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; Observed number of stages:                                                     1</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; Observed n1 (group 1)                                                         56</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; Observed n1 (group 2)                                                         56</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; Observed n1 (total)                                                          112</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; Z1                                                                          1.75</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; Interim decision:                                       continue to second stage</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; Calculated n2(Z1) (per group)                                           46.99923</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; Calculated c2(Z1)                                                           1.14</span></span></code></pre></div>
+<p>The results suggest recruiting 23 more patients per group for the
+second stage.</p>
+<p>We will simulate 47 more patients per group:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">rbind</span>(dat,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>             <span class="fu">data.frame</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>               <span class="at">endpoint =</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="dv">47</span>, .<span class="dv">3</span>, <span class="dv">1</span>), <span class="fu">rnorm</span>(<span class="dv">47</span>, <span class="dv">0</span>, <span class="dv">1</span>)),</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>               <span class="at">group =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;trt&quot;</span>, <span class="st">&quot;ctl&quot;</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                                  <span class="fu">c</span>(<span class="dv">47</span>, <span class="dv">47</span>)), <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;trt&quot;</span>, <span class="st">&quot;ctl&quot;</span>)),</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>               <span class="at">stage =</span> <span class="fu">rep</span>(<span class="dv">2</span>, <span class="dv">94</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>             ))</span></code></pre></div>
+<p>Now, we can use the <code>analyze</code> function to evaluate a
+selection of estimators on the complete dataset:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">analyze</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a> <span class="at">data =</span> dat,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a> <span class="at">statistics =</span> <span class="fu">c</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>   <span class="fu">SampleMean</span>(),</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>   <span class="fu">BiasReduced</span>(),</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>   <span class="fu">PseudoRaoBlackwell</span>(),</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>   <span class="fu">MedianUnbiasedStagewiseCombinationFunctionOrdering</span>(),</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>   <span class="fu">StagewiseCombinationFunctionOrderingCI</span>(),</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>   <span class="fu">StagewiseCombinationFunctionOrderingPValue</span>()</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>   ),</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a> <span class="at">data_distribution =</span> <span class="fu">Normal</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a> <span class="at">sigma =</span> <span class="dv">1</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a> <span class="at">design =</span> <span class="fu">get_example_design</span>(<span class="at">two_armed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>)</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; Design:                              TwoStageDesign&lt;n1=56;0.8&lt;=x1&lt;=2.3:n2=18-80&gt;</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; Data Distribution:                                             Normal&lt;two-armed&gt;</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; Observed number of stages:                                                     2</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; Observed n1 (group 1)                                                         56</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; Observed n1 (group 2)                                                         56</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt; Observed n1 (total)                                                          112</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt; Z1                                                                          1.75</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; Interim decision:                                       continue to second stage</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt; Calculated n2(Z1) (per group)                                           46.99923</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="co">#&gt; Calculated c2(Z1)                                                           1.14</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="co">#&gt; Observed n2 (group 1)                                                         47</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="co">#&gt; Observed n2 (group 2)                                                         47</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co">#&gt; Observed n2 (in total)                                                        94</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="co">#&gt; Z2                                                                          2.71</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#&gt; Final test decision:                                                 reject null</span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a><span class="co">#&gt; Stage 2 results:</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="co">#&gt;  Sample mean:                                                           0.434684</span></span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a><span class="co">#&gt;  Bias reduced MLE (iterations=1):                                      0.4221532</span></span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a><span class="co">#&gt;  Pseudo Rao-Blackwellized:                                             0.2658506</span></span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a><span class="co">#&gt;  Median unbiased (SWCF ordering):                                      0.3047428</span></span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a><span class="co">#&gt;  SWCF ordering CI:                                       [0.04435513, 0.5484439]</span></span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a><span class="co">#&gt;  SWCF ordering p-value:                                               0.01097266</span></span></code></pre></div>
+<p>The estimates presented here are for the difference in means of the
+two normal distributions. Keep in mind that a difference of <span class="math inline">\(\mu=0.3\)</span> was used in the simulation.</p>
+<p>Note that while the median unbiased estimator performs well in this
+particular example, this is not universally true.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+---
+title: "Introduction to adestr"
+author: "Jan Meis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to adestr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+This package implements methods to evaluate the performance characteristics
+of various point and interval estimators for adaptive two-stage designs with 
+prespecified sample-size recalculation rules. Further, it allows for
+evaluation of these estimators on real datasets, and it implements methods
+to calculate p-values.
+
+Currently, it works for designs objects which were produced by the
+R-package `adoptr`, which calculates optimal design parameters for
+adaptive two-stage designs. You can learn about adoptr here:
+[kkmann.github.io/adoptr/](https://kkmann.github.io/adoptr/).
+
+# Fitting a design with adoptr
+In order to showcase the capabilities of this package, we need a trial design first.
+We refer to [the example from the adoptr documentation](https://kkmann.github.io/adoptr/articles/adoptr.html)
+for this.
+You can read more about optimal adaptive designs fitted via the adoptr package here:
+[kkmann.github.io/adoptr/articles/adoptr_jss.html](https://kkmann.github.io/adoptr/articles/adoptr_jss.html).
+
+For the sake of this introduction, a pre-computed version of the first example from
+[kkmann.github.io/adoptr/articles/adoptr.html](https://kkmann.github.io/adoptr/articles/adoptr.html)
+is provided with this package via the `get_example_design` function.
+
+```{r}
+library(adestr)
+get_example_design(two_armed = TRUE)
+```
+
+# Example
+## Evaluating the mean squared of an estimator
+Now that we have created an optimal adaptive design, we can investigate the performance
+characteristics of various estimators for the mean in that design.
+To this end, the `evaluate_estimator` function can be used.
+
+```{r}
+evaluate_estimator(
+ score = MSE(),
+ estimator = SampleMean(),
+ data_distribution = Normal(two_armed = TRUE),
+ design = get_example_design(two_armed = TRUE),
+ mu = 0.3,
+ sigma = 1
+)
+```
+
+The mean squared error of the sample mean depends on the true underlying value of the
+paramter $\mu$, which of course is unknown. Therefore, it may be
+advisable to use the `evaluate_estimator` function on an array of values for $\mu$
+to investigate the distributional properties of an estimator.
+
+In the following, the MSE of the sample mean vs. a weighted sample mean with fixed weights
+will be plotted.
+
+```{r}
+mse_mle <- evaluate_estimator(
+  score = MSE(),
+  estimator = SampleMean(),
+  data_distribution = Normal(two_armed = TRUE),
+  design = get_example_design(two_armed = TRUE),
+  mu = seq(-0.75, 1.32, .03),
+  sigma = 1
+)
+mse_weighted_sample_means <- evaluate_estimator(
+  score = MSE(),
+  estimator = WeightedSampleMean(w1 = .8),
+  data_distribution = Normal(two_armed = TRUE),
+  design = get_example_design(two_armed = TRUE),
+  mu = seq(-0.75, 1.32, .03),
+  sigma = 1
+)
+plot(c(mse_mle, mse_weighted_sample_means))
+```
+
+## Analyzing datasets
+Next, let us look at how to the package can be used to calculate estimates
+after data has been collected.
+
+The first stage data of a trial might look like this:
+
+```{r}
+set.seed(321)
+dat <- data.frame(
+ endpoint = c(rnorm(56, .3, 1), rnorm(56, 0, 1)),
+ group = factor(rep(c("trt", "ctl"),
+                    c(56,56)), levels = c("trt", "ctl")),
+ stage = rep(1, 112)
+)
+head(dat)
+```
+
+```{r}
+analyze(data = dat,
+        statistics = list(),
+        data_distribution = Normal(two_armed = TRUE),
+        design = get_example_design(two_armed = TRUE),
+        sigma = 1)
+```
+The results suggest recruiting 23 more patients per group for the second stage.
+
+We will simulate 47 more patients per group:
+
+```{r}
+dat <- rbind(dat,
+             data.frame(
+               endpoint = c(rnorm(47, .3, 1), rnorm(47, 0, 1)),
+               group = factor(rep(c("trt", "ctl"),
+                                  c(47, 47)), levels = c("trt", "ctl")),
+               stage = rep(2, 94)
+             ))
+```
+
+Now, we can use the `analyze` function to evaluate a selection of estimators on the complete dataset:
+
+```{r}
+analyze(
+ data = dat,
+ statistics = c(
+   SampleMean(),
+   BiasReduced(),
+   PseudoRaoBlackwell(),
+   MedianUnbiasedStagewiseCombinationFunctionOrdering(),
+   StagewiseCombinationFunctionOrderingCI(),
+   StagewiseCombinationFunctionOrderingPValue()
+   ),
+ data_distribution = Normal(two_armed = TRUE),
+ sigma = 1,
+ design = get_example_design(two_armed = TRUE)
+)
+```
+
+The estimates presented here are for the difference in means of the two normal distributions.
+Keep in mind that a difference of $\mu=0.3$ was used in the simulation.
+
+Note that while the median unbiased estimator performs well in this particular example, this
+is not universally true.
+

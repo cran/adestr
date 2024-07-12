@@ -13,7 +13,7 @@ Results <- setClass("Results", slots = c(data ="data.frame",
 #'
 #' Note that in \code{\link{adestr}}, statistics are codes as functions of the
 #' stage-wise sample means (and stage-wise sample variances if data_distribution is
-#' \code{\link{Student}}). In a first-step, the data is summarized to produce these
+#' \code{\link[adoptr]{Student}}). In a first-step, the data is summarized to produce these
 #' parameters. Then, the list of statistics are evaluated at the values of these parameters.
 #'
 #' The output of the \code{analyze} function also displays information on the hypothesis
@@ -64,7 +64,7 @@ setGeneric("analyze", function(data,
 setMethod("analyze", signature("data.frame"),
           function(data, statistics, data_distribution, use_full_twoarm_sampling_distribution, design, sigma, exact){
             if (missing(data))
-              stop("data argument may not be ommited.")
+              stop("data argument may not be ommited.") #nocov
             if (is(data_distribution, "Student") && !missing(sigma)){
               warning("data_distribution was set to Normal because sigma was specified.")
               data_distribution <- Normal(two_armed = data_distribution@two_armed)

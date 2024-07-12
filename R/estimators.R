@@ -1,3 +1,4 @@
+# nocov start
 #' Statistics and Estimators of the adestr package
 #'
 #' The \code{\link{Statistic}} class is a parent class for the classes
@@ -508,6 +509,9 @@ setMethod("get_stagewise_estimators", signature("IntervalEstimator", "DataDistri
           })
 
 
+# nocov end
+
+
 setClass("SampleMean", contains = "PointEstimator")
 #' @rdname PointEstimator-class
 #' @export
@@ -705,6 +709,7 @@ rb2_kv <- function(smean1, smean2, n1, n2, mu, sigma, two_armed, preimage,
     vectorInterface = TRUE)$integral / denom
 }
 
+# nocov start
 newrb2_kv <- function(smean, n1, n2, mu, sigma, two_armed, preimage,
                    tol = getOption("adestr_tol_inner", default = .adestr_options[["adestr_tol_inner"]]),
                    maxEval = getOption("adestr_maxEval_inner", default = .adestr_options[["adestr_maxEval_inner"]]),
@@ -772,7 +777,7 @@ crb2_kv <- function(smean1, smean2, n1, n2, mu, sigma, two_armed, preimage,
     absError = absError,
     vectorInterface = TRUE)$integral / denom
 }
-
+# nocov end
 pseudorb2_kv <- function(design, smean1, smean2, n1, n2, mu, sigma, two_armed,
                    tol = getOption("adestr_tol_inner", default = .adestr_options[["adestr_tol_inner"]]),
                    maxEval = getOption("adestr_maxEval_inner", default = .adestr_options[["adestr_maxEval_inner"]]),
@@ -939,7 +944,7 @@ adoptr_alpha_shifted_design_kv <- function(design, shiftc1f, shiftc1e, shiftc2){
   }
   pr_es1 + pr_es2
 }
-
+# nocov start
 setClass("LinearShiftRepeatedPValue", slots =  c(wc1f="numeric", wc1e="numeric", wc2="numeric"), contains = "VirtualPValue")
 #' @rdname PValue-class
 #' @param wc1f slope of futility boundary change.
@@ -973,6 +978,7 @@ rp2_kv <- function(design, smean1, smean2, n1, n2, sigma, two_armed, wc1f=0, wc1
                                 shiftc1e = diff*wc1e,
                                 shiftc2  = diff*wc2)
 }
+# nocov end
 
 p_ml <- function(design, smean, n, mu, sigma, two_armed, tol = getOption("adestr_tol_inner", default = .adestr_options[["adestr_tol_inner"]]), maxEval = getOption("adestr_maxEval_inner", default = .adestr_options[["adestr_maxEval_inner"]]), absError = getOption("adestr_absError_inner", default = .adestr_options[["adestr_absError_inner"]]), ...) {
   design <- TwoStageDesignWithCache(design)
@@ -1265,8 +1271,8 @@ setMethod("get_stagewise_estimators", signature("MLEOrderingPValue", "Normal"),
                    design,
                    sigma,
                    exact) {
-            g1 <- Vectorize(\(design, smean1, n1, sigma, two_armed, ...) p1_ml(design, smean1, n1, mu = 0, sigma, two_armed, ...), c("smean1"))
-            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, sigma, two_armed, ...) p2_ml(design, smean1, smean2, n1, n2, mu = 0, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
+            g1 <- Vectorize(\(design, smean1, n1, mu, sigma, two_armed, ...) p1_ml(design, smean1, n1, mu = 0, sigma, two_armed, ...), c("smean1"))
+            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, mu, sigma, two_armed, ...) p2_ml(design, smean1, smean2, n1, n2, mu = 0, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
             list(g1 = g1,
                  g2 = g2)
           })
@@ -1282,8 +1288,8 @@ setMethod("get_stagewise_estimators", signature("LikelihoodRatioOrderingPValue",
                    design,
                    sigma,
                    exact) {
-            g1 <- Vectorize(\(design, smean1, n1, sigma, two_armed, ...) p1_lr(design, smean1, n1, mu = 0, sigma, two_armed, ...), c("smean1"))
-            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, sigma, two_armed, ...) p2_lr(design, smean1, smean2, n1, n2, mu = 0, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
+            g1 <- Vectorize(\(design, smean1, n1, mu, sigma, two_armed, ...) p1_lr(design, smean1, n1, mu = 0, sigma, two_armed, ...), c("smean1"))
+            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, mu, sigma, two_armed, ...) p2_lr(design, smean1, smean2, n1, n2, mu = 0, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
             list(g1 = g1,
                  g2 = g2)
           })
@@ -1299,8 +1305,8 @@ setMethod("get_stagewise_estimators", signature("ScoreTestOrderingPValue", "Norm
                    design,
                    sigma,
                    exact) {
-            g1 <- Vectorize(\(smean1, n1, sigma, two_armed, ...) p1_st(smean1, n1, mu = 0, sigma, two_armed, ...), c("smean1"))
-            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, sigma, two_armed, ...) p2_st(design, smean1, smean2, n1, n2, mu = 0, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
+            g1 <- Vectorize(\(smean1, n1, mu, sigma, two_armed, ...) p1_st(smean1, n1, mu = 0, sigma, two_armed, ...), c("smean1"))
+            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, mu, sigma, two_armed, ...) p2_st(design, smean1, smean2, n1, n2, mu = 0, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
             list(g1 = g1,
                  g2 = g2)
           })
@@ -1316,8 +1322,8 @@ setMethod("get_stagewise_estimators", signature("StagewiseCombinationFunctionOrd
                    design,
                    sigma,
                    exact) {
-            g1 <- Vectorize(\(smean1, n1, sigma, two_armed, ...) p1_sw(smean1, n1, mu = 0, sigma, two_armed, ...), c("smean1"))
-            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, sigma, two_armed, ...) p2_sw(design, smean1, smean2, n1, n2, mu = 0, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
+            g1 <- Vectorize(\(smean1, n1, mu, sigma, two_armed, ...) p1_sw(smean1, n1, mu = 0, sigma, two_armed, ...), c("smean1"))
+            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, mu, sigma, two_armed, ...) p2_sw(design, smean1, smean2, n1, n2, mu = 0, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
             list(g1 = g1,
                  g2 = g2)
           })
@@ -1335,8 +1341,27 @@ setMethod("get_stagewise_estimators", signature("NeymanPearsonOrderingPValue", "
                    design,
                    sigma,
                    exact) {
-            g1 <- Vectorize(\(design, smean1, n1, sigma, two_armed, ...) p1_np(design, smean1, n1, mu = 0, mu0=estimator@mu0, mu1=estimator@mu1, sigma, two_armed, ...), c("smean1"))
-            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, sigma, two_armed, ...) p2_np(design, smean1, smean2, n1, n2, mu = 0, mu0=estimator@mu0, mu1=estimator@mu1, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
+            g1 <- Vectorize(\(design, smean1, n1, mu, sigma, two_armed, ...) p1_np(design, smean1, n1, mu = 0, mu0=estimator@mu0, mu1=estimator@mu1, sigma, two_armed, ...), c("smean1"))
+            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, mu, sigma, two_armed, ...) p2_np(design, smean1, smean2, n1, n2, mu = 0, mu0=estimator@mu0, mu1=estimator@mu1, sigma, two_armed, ...), c("smean1", "smean2", "n2"))
+            list(g1 = g1,
+                 g2 = g2)
+          })
+setClass("NaivePValue", contains = "VirtualPValue")
+#' @rdname PValue-class
+#' @export
+NaivePValue <- function() new("NaivePValue", label = "Naive p-value")
+#' @rdname get_stagewise_estimators
+setMethod("get_stagewise_estimators", signature("NaivePValue", "Normal"),
+          function(estimator,
+                   data_distribution,
+                   use_full_twoarm_sampling_distribution,
+                   design,
+                   sigma,
+                   exact) {
+            g1 <- Vectorize(\(smean1, n1, mu, sigma, two_armed, ...) pnorm(smean_to_z(smean1, n1, sigma, two_armed), lower.tail=FALSE), c("smean1"))
+            g2 <- Vectorize(\(design, smean1, smean2, n1, n2, mu, sigma, two_armed, ...) pnorm(smean_to_z(smeans_to_smean(smean1 = smean1, smean2 = smean2, n1 = n1, n2 = n2),
+                                                                                                          n = n1 + n2, sigma = sigma, two_armed = two_armed),
+                                                                                               lower.tail=FALSE), c("smean1", "smean2", "n2"))
             list(g1 = g1,
                  g2 = g2)
           })
@@ -1458,6 +1483,7 @@ setMethod("get_stagewise_estimators", signature("ScoreTestOrderingCI", "Normal")
               u2 = u2
             ))
           })
+#nocov start
 setClass("NeymanPearsonOrderingCI", contains = "VirtualIntervalEstimator", slots = c(mu0 = "numeric", mu1 = "numeric"))
 #' @inheritParams NeymanPearsonOrderingPValue
 #' @rdname IntervalEstimator-class
@@ -1488,7 +1514,7 @@ setMethod("get_stagewise_estimators", signature("NeymanPearsonOrderingCI", "Norm
               u2 = u2
             ))
           })
-
+#nocov end
 setClass("NaiveCI", contains = "VirtualIntervalEstimator")
 #' @rdname IntervalEstimator-class
 #' @export
@@ -1639,6 +1665,7 @@ setMethod("get_stagewise_estimators", signature("MidpointScoreTestOrderingCI", "
               g2 = g2
             ))
           })
+#nocov start
 setClass("MidpointNeymanPearsonOrderingCI", contains = "VirtualPointEstimator")
 #' @inheritParams NeymanPearsonOrderingPValue
 #' @rdname PointEstimator-class
@@ -1667,7 +1694,7 @@ setMethod("get_stagewise_estimators", signature("MidpointNeymanPearsonOrderingCI
               g2 = g2
             ))
           })
-
+#nocov end
 setClass("MedianUnbiasedStagewiseCombinationFunctionOrdering", contains = "VirtualPointEstimator")
 #' @rdname PointEstimator-class
 #' @export
@@ -1732,6 +1759,7 @@ setClass("MedianUnbiasedNeymanPearsonOrdering", contains = "VirtualPointEstimato
 #' @inheritParams NeymanPearsonOrderingPValue
 #' @rdname PointEstimator-class
 #' @export
+#nocov start
 MedianUnbiasedNeymanPearsonOrdering <- function(mu0 = 0, mu1 = 0.4) new("MedianUnbiasedNeymanPearsonOrdering", mu0 = mu0, mu1 = mu1, label = paste0("Median unbiased (Neyman-Pearson test ordering, mu0=",format(mu0),", mu1=",format(mu1),")"))
 #' @rdname get_stagewise_estimators
 setMethod("get_stagewise_estimators", signature("MedianUnbiasedNeymanPearsonOrdering", "Normal"),
@@ -1744,7 +1772,7 @@ setMethod("get_stagewise_estimators", signature("MedianUnbiasedNeymanPearsonOrde
             list(g1 = Vectorize(\(design, smean1, n1, sigma, two_armed, ...) find_root_p1_np(design, smean1, n1, mu0=estimator@mu0, mu1=estimator@mu1, sigma, two_armed, p_boundary = 0.5, ...), c("smean1")),
                  g2 = Vectorize(\(design, smean1, smean2, n1, n2, sigma, two_armed, ...) find_root_p2_np(design, smean1, smean2, n1, n2, mu0=estimator@mu0, mu1=estimator@mu1, sigma, two_armed, p_boundary = 0.5, ...), c("smean1", "smean2", "n2")))
           })
-
+#nocov end
 # For the p-value plots
 implied_c2 <- function(design, z1, p2, sigma, two_armed, alpha, tol_root = getOption("adestr_tol_roots", default = .adestr_options[["adestr_tol_roots"]]), tol = getOption("adestr_tol_inner", default = .adestr_options[["adestr_tol_inner"]]), maxEval = getOption("adestr_maxEval_inner", default = .adestr_options[["adestr_maxEval_inner"]]), absError = getOption("adestr_absError_inner", default = .adestr_options[["adestr_absError_inner"]]), ...){
   design <- TwoStageDesignWithCache(design)

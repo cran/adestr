@@ -1,12 +1,13 @@
 Package: adestr
 Type: Package
 Title: Estimation in Optimal Adaptive Two-Stage Designs
-Version: 0.5.0
+Version: 1.0.0
 Authors@R: c(person("Jan", "Meis", role = c("aut", "cre"), email = "meis@imbi.uni-heidelberg.de", comment = c(ORCID = "0000-0001-5407-7220")),
   person("Martin", "Maechler", role = c("cph"), email = "maechler@stat.math.ethz.ch", comment = c(ORCID = "0000-0002-8685-9910", "Original author of monoSpl.c (from the 'stats' package).")))
 Description: 
   Methods to evaluate the performance characteristics of
-  various point and interval estimators for optimal adaptive two-stage designs.
+  various point and interval estimators for optimal adaptive two-stage designs as described
+  in Meis et al. (2024) <doi:10.1002/sim.10020>.
   Specifically, this package is written to work with trial designs created by the 'adoptr' package
   (Kunzmann et al. (2021) <doi:10.18637/jss.v098.i09>; Pilz et al. (2021) <doi:10.1002/sim.8953>)).
   Apart from the a priori evaluation of performance characteristics, this package also allows for the
@@ -23,9 +24,9 @@ Copyright: This package contains a modified version of the monotonic
 Encoding: UTF-8
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
-Depends: R (>= 4.0.0)
+Depends: R (>= 4.0.0), adoptr
 Imports: methods, stats, grDevices, cubature, ggplot2, ggpubr, scales,
-        latex2exp, forcats, future.apply, pracma, progressr, Rdpack
+        latex2exp, forcats, future.apply, progressr, Rdpack
 Suggests: covr, knitr, rmarkdown, testthat (>= 3.0.0), microbenchmark
 Config/testthat/edition: 3
 Collate: 'adestr_package.R' 'twostagedesign_with_cache.R' 'analyze.R'
@@ -37,10 +38,10 @@ Collate: 'adestr_package.R' 'twostagedesign_with_cache.R' 'analyze.R'
 URL: https://jan-imbi.github.io/adestr/
 RdMacros: Rdpack
 NeedsCompilation: yes
-Packaged: 2023-09-26 11:41:51 UTC; pn425
+Packaged: 2024-07-12 13:14:06 UTC; pn425
 Author: Jan Meis [aut, cre] (<https://orcid.org/0000-0001-5407-7220>),
   Martin Maechler [cph] (<https://orcid.org/0000-0002-8685-9910>,
     Original author of monoSpl.c (from the 'stats' package).)
 Maintainer: Jan Meis <meis@imbi.uni-heidelberg.de>
 Repository: CRAN
-Date/Publication: 2023-09-27 09:20:11 UTC
+Date/Publication: 2024-07-12 13:50:09 UTC

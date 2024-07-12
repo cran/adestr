@@ -1,10 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# adestr <a href='https://github.com/jan-imbi/adestr'><img src='man/figures/sticker.png' align="right" height="80" /></a>
+# adestr <a href='https://github.com/jan-imbi/adestr'><img src='man/figures/sticker.png' align="right" width=40% /></a>
 
 <!-- badges: start -->
 
+[![doi](https://img.shields.io/badge/doi-10.1002%2Fsim.10020-blue?link=https%3A%2F%2Fdoi.org%2F10.1002%2Fsim.10020)](https://doi.org/10.1002/sim.10020)
 [![R-CMD-check](https://github.com/jan-imbi/adestr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jan-imbi/adestr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/jan-imbi/adestr/branch/master/graph/badge.svg?token=ORYWTYOZPT)](https://app.codecov.io/gh/jan-imbi/adestr?branch=master)
@@ -18,8 +19,26 @@ Further, it allows for evaluation of these estimators on real datasets,
 and it implements methods to calculate p-values.
 
 Currently, it works for designs objects which were produced by the
-R-package `adoptr`, which calculates optimal design parameters adaptive
-two-stage designs.
+R-package [`adoptr`](https://github.com/optad/adoptr), which calculates
+optimal design parameters adaptive two-stage designs.
+
+An introductory vignette covering common usecases is given at
+<https://jan-imbi.github.io/adestr/articles/Introduction.html>.
+
+This package comes suite of unit tests. The code of the test cases can
+be viewed here:
+<https://github.com/jan-imbi/adestr/tree/master/tests/testthat>. The
+authors assume no responsibility for the correctness of the code or
+results produced by its usage. Use at your own risk.
+
+You may also be interested in the reference implementation looking at
+the
+<https://github.com/jan-imbi/adestr/blob/master/R/reference_implementation.R>.
+It uses the same notation as in our paper
+([doi.org/10.1002/sim.10020](https://doi.org/10.1002/sim.10020)) and may
+therefore be easier to understand at first.
+
+<!-- reference implementation verlinken -->
 
 ## Installation
 
@@ -31,22 +50,14 @@ remotes::install_github("https://github.com/jan-imbi/adestr")
 
 into your R console.
 
-## Information for reviewers
-
-The scripts to reproduce the results from the paper can be found in the
-`/data/code/` directory of this repository. The results themselves are
-located in the `/data/` directory.
-
-The easiest way to inspect the results is to [clone this
-repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository).
-
-## General example for usage of the package
+## Small introductory example
 
 Here is a quick example showing the capabilities of `adestr`. First,
 load `adestr`:
 
 ``` r
 library(adestr)
+#> Loading required package: adoptr
 ```
 
 Then, you can evaluate the performance of an estimator like this:
@@ -82,7 +93,7 @@ evaluate_estimator(
   plot()
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.svg" width="100%" />
 
 You can analyze a dataset like this:
 
@@ -128,3 +139,7 @@ analyze(
 #>  SWCF ordering p-value:                                               0.01097483
 #>  LR test ordering p-value:                                          6.653031e-05
 ```
+
+Please refer to
+<https://jan-imbi.github.io/adestr/articles/Introduction.html> for a
+more detailed introduction.
